@@ -1,37 +1,95 @@
-import random
+import datetime
+import os
+from Password import Password
+from rich import print, box
+from rich.layout import Layout
+from rich.console import Console, Group
+from rich.panel import Panel
+from rich.text import Text
 
-# Набор доступных символов.
-ARRAY_SYMBOLS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '.', '?', '_', '-']
+def file_name():
+    text_datetime = f'{datetime.datetime.now()}'
+    symbol_replace = ['.', ':', '-', ' ']
+    fn = ''
+    for s in text_datetime:
+        is_write = True
+        for sr in symbol_replace:
+            if s == sr:
+                fn += '_'
+                is_write = False
+        if is_write:
+            fn += s
+    return fn
 
-COUNT_SYMBOLS = 4
+password = Password()
+
+count_symbols = input('Введите количество символов в пароле: ')
 
 
-input_count = input('Введите количество символов в пароле: ')
-if input_count.isdigit():
-    count_symbols = int(input_count)
+if count_symbols.isdigit():
+    password.generation(int(count_symbols))
 else:
-    count_symbols = COUNT_SYMBOLS
-
-# Узнаем количество всех возможных комбинаций.
-count_variant = len(ARRAY_SYMBOLS) ** count_symbols
-
-# Функция для получения случайного символа.
-def random_symbols():
-    return ARRAY_SYMBOLS[random.randint(0, len(ARRAY_SYMBOLS) - 1)]
+    password.generation(None)
 
 
-print(f'Количество доступных символов: {len(ARRAY_SYMBOLS)}')
-print(f'Доступные символы: {ARRAY_SYMBOLS}')
-print(f'Количество возможных комбинаций: {count_variant}')
+#print(f'Приложение версии 0.0.1')
+#print(f'Количество доступных символов: {len(password.get_array_symbols())}')
+#print(f'Доступные символы: {password.get_array_symbols()}')
+#print(f'Количество возможных комбинаций: {password.count_variant}')
+#
+#print(f'Сгенерированный пароль: {password.password}')
 
-# Генерируем уникальный пароль.
-password = ''
 
-for i in range(0, count_symbols):
-    password = password + f'{random_symbols()}'
-print(f'Сгенерированный пароль: {password}')
+console = Console()
+layout = Layout(name="info")
+
+print_count_array_symbols = Text.from_markup(
+    f'Количество доступных символов: {len(password.get_array_symbols())}',
+    style="bold yellow"
+)
+
+print_array_symbols = Text.from_markup(
+    f'Доступные символы: {password.get_array_symbols()}',
+    style="bold yellow"
+)
+
+print_count_variant = Text.from_markup(
+    f'Количество возможных комбинаций: {password.count_variant}',
+    style="bold yellow"
+)
+
+print_password = Text.from_markup(
+    f'Сгенерированный пароль: {password.password}',
+    style="bold yellow"
+)
+
+layout.update(
+    Panel(
+        Group(
+            print_count_array_symbols,
+            print_array_symbols,
+            print_count_variant,
+            print_password
+        ),
+        box=box.ROUNDED,
+        title="Информация",
+        subtitle="Приложение версии 0.0.1",
+        style="blue",
+        border_style="red",
+    )
+)
+
+
+console.print(layout)
+
+
+
+if not os.path.exists('password'):
+    os.mkdir('password')
 
 # Запись пароля в файл.
-with open('password.txt', 'a') as password_string:
+with open(f'password/{file_name()}.txt', 'a') as password_string:
     password_string.write('{}\n'.format(f'{password}'))
+
+input()
+
