@@ -1,5 +1,4 @@
 import json
-
 from flask import Flask
 
 from Password import Password
@@ -28,7 +27,6 @@ def generation_password(count_symbols):
     )
 
     return response
-
 
 
 if __name__ == "__main__":
