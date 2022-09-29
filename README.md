@@ -1,4 +1,4 @@
-# generat-password
+# generate-password
 Получить список всех используемых библиотек в проекте:
 ```bash
 pip list
